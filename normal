@@ -1,0 +1,33 @@
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local player = Players.LocalPlayer
+local tool = Instance.new("Tool")
+tool.Name = "Duel Speed"
+tool.RequiresHandle = false
+tool.CanBeDropped = false
+tool.Parent = player.Backpack
+local connection = nil
+local SPEED_SETTING = 50
+local function applySpeed()
+local char = player.Character
+local hrp = char and char:FindFirstChild("HumanoidRootPart")
+local hum = char and char:FindFirstChildOfClass("Humanoid")
+if hrp and hum then
+local moveDir = hum.MoveDirection
+hrp.AssemblyLinearVelocity = Vector3.new(moveDir.X * SPEED_SETTING, hrp.AssemblyLinearVelocity.Y, moveDir.Z * SPEED_SETTING)
+end
+end
+tool.Equipped:Connect(function()
+if connection then connection:Disconnect() end
+connection = RunService.Heartbeat:Connect(applySpeed)
+end)
+tool.Unequipped:Connect(function()
+if connection then
+connection:Disconnect()
+connection = nil
+end
+end)
+player.CharacterAdded:Connect(function()
+task.wait(0.5)
+tool.Parent = player.Backpack
+end)
